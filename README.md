@@ -10,7 +10,7 @@ This is a Django REST framework project for managing vendors, purchase orders, a
 
 ```
 git clone https://github.com/ArhamKhanPathan/vendor-management.git
-cd vendor-management
+cd Vednor_Mgt
 ```
 2. Create a Virtual Environment
 ```
