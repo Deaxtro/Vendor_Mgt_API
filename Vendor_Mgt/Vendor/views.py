@@ -10,29 +10,29 @@ from .serializers import VendorSerializer, POSerialiezer, Historic_PerformanceSe
 class VendorView(generics.ListCreateAPIView):
     queryset = Vendor_Details.objects.all()
     serializer_class = VendorSerializer
-    permission_classes = []
+    #permission_classes = []
 
 class VendorDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Vendor_Details.objects.all()
     serializer_class = VendorSerializer
-    permission_classes = []
+    #permission_classes = []
 
 
 class PurchaseOrderView(generics.ListCreateAPIView):
     queryset=PO.objects.all()
     serializer_class=POSerialiezer
-    permission_classes=[]
+    #permission_classes=[]
 
 class PurchaseOrderDetailview(generics.RetrieveUpdateDestroyAPIView):
     queryset=PO.objects.all()
     serializer_class=POSerialiezer
-    permission_classes=[]
+    #permission_classes=[]
     
     
 class PerformanceDetailView(generics.RetrieveAPIView):
     queryset=Historic_Performance.objects.all()
     serializer_class=Historic_PerformanceSerializer
-    permission_classes=[]
+    #permission_classes=[]
 
 class AcknowledgeView(generics.UpdateAPIView):
     queryset=PO.objects.all()

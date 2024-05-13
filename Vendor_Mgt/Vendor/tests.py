@@ -5,11 +5,16 @@ from rest_framework.test import APIClient
 from django.utils import timezone
 from .models import *
 from datetime import datetime
+from rest_framework.authtoken.models import Token
+from django.contrib.auth.models import User
 
 # Create your tests here.
 class VendorAPITests(TestCase):
     def setUp(self):
+        self.user=User.objects.create_user("john", "lennon@thebeatles.com", "johnpassword")
+        self.token, self._ = Token.objects.get_or_create(user=self.user)
         self.client = APIClient()
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
         self.vendor_data = {
             'name': 'Test Subject',
             'contact_details': 'Details for contact',
@@ -17,6 +22,7 @@ class VendorAPITests(TestCase):
             'vendor_code': 'VINC'
         }
         self.vendor = Vendor_Details.objects.create(**self.vendor_data)
+        
 
     def test_vendor_list(self):
         url = reverse('vendor_list')
@@ -36,7 +42,10 @@ class VendorAPITests(TestCase):
 
 class POAPITests(TestCase):
     def setUp(self):
+        self.user=User.objects.create_user("john", "lennon@thebeatles.com", "johnpassword")
+        self.token, self._ = Token.objects.get_or_create(user=self.user)
         self.client = APIClient()
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
 
         self.vendor = Vendor_Details.objects.create(
             name='Vendor 1',
