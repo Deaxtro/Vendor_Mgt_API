@@ -1,4 +1,4 @@
-from django.db.models import Avg
+from django.db.models import Avg, F, ExpressionWrapper, DurationField, FloatField
 from django.utils import timezone
 from .models import *
 
@@ -13,14 +13,22 @@ def new_rating_avg(vendor):
     return completed_purhcase_orders_rating
 
 def new_avg_resp_time(vendor):
-    acknowledged_purchase_orders = PO.objects.filter(vendor=vendor, acknowledgement_date__isnull=False)
-    resp_times = (acknowledged_purchase_orders.values('acknowledgement_date') - acknowledged_purchase_orders.values('issue_date')).aggregate(Avg('acknowledgement_date'))['acknowledgement_date__avg']
-    return resp_times.days() if resp_times else 0
+    acknowledged_purchase_orders = PO.objects.filter(
+        vendor=vendor, acknowledgment_date__isnull=False
+        ).annotate(
+            response_time=ExpressionWrapper(F('acknowledgment_date') - F('issue_date'), output_field=DurationField())
+            ).annotate(
+                response_time_in_days=ExpressionWrapper(
+                    F('response_time') / (86400*1000000), output_field=FloatField()
+                )
+            )
+    avg_response_times = acknowledged_purchase_orders.aggregate(avg_response_times=Avg('response_time_in_days'))['avg_response_times']
+    return avg_response_times if avg_response_times else 0
 
 def new_fulfillment_rate(vendor):
     issued_purchase_orders = PO.objects.filter(vendor=vendor)
     fulfilled_orders = issued_purchase_orders.filter(status='completed', issue_date__lte=timezone.now())
-    new_fr = (fulfilled_orders.count()/issued_purchase_orders.count())*100 if issued_purchase_orders>0 else 0
+    new_fr = (fulfilled_orders.count()/issued_purchase_orders.count())*100 if issued_purchase_orders.count()>0 else 0
     return new_fr
 
 
